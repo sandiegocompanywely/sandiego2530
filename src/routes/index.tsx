@@ -57,7 +57,7 @@ const PRINTS: Print[] = [
 ];
 
 function Index() {
-  const [colorIdx, setColorIdx] = useState(4); // Navy
+  const [colorIdx, setColorIdx] = useState(0);
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
 
