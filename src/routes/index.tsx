@@ -21,9 +21,6 @@ const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://lh3.googleusercontent.com/aida/ADBb0uiDRz5eQ3CZ92NphgaGh1E072RDBJSCCRkr92JZHXdy0Scoihm4GnphsmCpvK2rdhxkbJ0lOB0VwE1vz7K_ydC8iKMDG9GXBii2fvcmwFu5W_1A3zSmEWvlhfCIvrhP15OdiLh-7cAcFG3c-RT1vuoQ7FUEcirkQ-rAINg4C_X-DQdV_0yCFeD3qyMsOfTIEcSnWY_z9ZqrHGUREn6OWcN0B93DTmgYjOCXFUDkBQRyxXN2I5nOv0L56RM" },
   { name: "Black", hex: "#1a1a1a", img: "https://lh3.googleusercontent.com/aida/ADBb0uizC1f_QbPXfb84GpcdKNJf9McILPjCAvgGxZ464-16FTo35BHRpNSfM0Hu73cLC7BE0siqRPhgqXwwK6YYo3qmf0wLzVnwWsGZEAJhKojWe5w-bmQ3amvxtT0s3-GkJgkLN737pVnf3KjyvbJPNFs5JVgzbKHRJC9QUFOjJw7dAvUilguS3WvNKZB3oz9wMtAaXaltRWqG8oeNubdBjQ9OYTChp1XLnioBIt3KBW0EhO2-imqnxx6aaTw" },
   { name: "Brown", hex: "#7f5539", img: "https://lh3.googleusercontent.com/aida/ADBb0uiL71k0Gi9tSnLCiVQX-tUX8o4rfdsU950o9YT8q7B_hNNmEWHlT5d-OWFoZ5yBy8WMAU1DhBKWPAPm5DJbA2hw8lBeV0c4Rq5_1P0iycI9hfdZ9xM_uWzzXU19K5AzCTq1go7XbMXc8ieaszk9QWnEwz7OMftqsh7wKa1kHGvE_J7tyhgJ--ajwR30emgi4v2JMUK7tT6QetP8wU-JHYz3Ui1AVLw6ULq72Jrse4bF5QODEGiPoMymoMw" },
-  { name: "Heather Grey", hex: "#a8a8a8", img: "https://lh3.googleusercontent.com/aida/ADBb0ugUVWiNlkghTkDb2A-2Njae5P19NEyYuMixWp0oGO6yxZpwxOWP3Lyz8llNxnPncuB2igaILJyuEgFQDhDWFMXu4p2YTQAr6mk9qv9U_Chzn_kvKa0ailusTBZMS7k7XuGu58gPJ2XMutv8Z5Gu9mdFaiReYqm_9Q0G-xnl93DiFAYVV7S_VaDE3efXdQ-1oTfasLrQSbaJaRcJyLZaiTkBW1TLavUaqOQG72g8w29z5E98fgpNBcxn2uM" },
-  { name: "Navy Blue", hex: "#1a2a3a", img: "https://lh3.googleusercontent.com/aida/ADBb0ujKvGYcI8jMED62tEChloxTKW-30GpGuqiPw3pPhfQHarkRXDifclYU2F0XaDBn-wOTws7o6-NzzJ8gy6DDpoHRx_izaG1eBEn1ya2pHyLRAcuugbFHz2XgEZ6zwtLgQSOeUHFSBGYmWiyjHBgPrlVuMFYL8eL5XJbg75dTjIKO2P2t6dqJmSPhxd0jyiiu5uj3E4IPj1873cZyRl62PhUSW7eVKeX2LPcrf4FZlRh6V1dQieBPEZ0TDl8" },
-  { name: "Bone White", hex: "#e5e3dc", img: "https://lh3.googleusercontent.com/aida/ADBb0ugCO0b2nRibpbuw4Ed8617VkDVYbbNeD-7rv2eZy8G4_j3Z9vpsUNc0vigOMFoPGOgezLqkyrh0MIFzQZIUm7U5Aw93v2yOxzQJbKy-tvPF1XdOnqPewOyK9OhfpXLMLOIXDNwTEJpgkjxvugXUXfCJlaPut2Y0FaQfFEEmspdJ_sSXPCUVoiXprIXrEq72N8d7IbeOfrr3IGTnBU8IZtjXq5_9Q2FNnBzpBfL9jDCvNyKYdDcPlQ2HAqQ" },
   { name: "Off-White", hex: "#f5f5f0", img: "https://lh3.googleusercontent.com/aida/ADBb0uhZjBxIXf0lTxUPsXZAjvbbvdapeGvo3U-9dcxBarXHA0h5AoyX25fP3kynuKsXzc5ghomuRiVwai98E2urqd3g7yVizS-2ICVduN0Xa9w2SxcCblpLJpbGJ-Gy6L-44qXrHXs6UFASg8KIwu6p1QXBSEvsgxwiXZLjWSGILob1C0zDH70nG_TInIdiuhPF3IORu7ByFSVfp7qUx3DfBw-NnVnP-JOksv5KHiFx7M2PBjUbx8M6c5PgcA" },
 ];
 
@@ -60,7 +57,7 @@ const PRINTS: Print[] = [
 ];
 
 function Index() {
-  const [colorIdx, setColorIdx] = useState(4); // Navy
+  const [colorIdx, setColorIdx] = useState(0);
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
 
