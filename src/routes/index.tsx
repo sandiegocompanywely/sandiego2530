@@ -79,9 +79,7 @@ function Index() {
             style={{ opacity: fading ? 0 : 1 }}
           />
           <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-20 pointer-events-none">
-            <div className="w-1/3 max-w-[150px] opacity-90 transition-all duration-300">
-              {print.svg}
-            </div>
+            <img src={print.img} alt={print.name} className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300" />
           </div>
         </section>
 
@@ -153,7 +151,7 @@ function Index() {
                       active ? "border-primary" : "border-transparent hover:border-surface-variant"
                     }`}
                   >
-                    {p.svg}
+                    <img src={p.img} alt={p.name} className="w-full h-full object-contain" />
                   </button>
                 );
               })}
