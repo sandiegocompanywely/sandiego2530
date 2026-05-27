@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
 import { X, ShoppingBag, ChevronLeft, ChevronRight, Heart, Share2, Home, Star, Send, ShoppingCart } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Color = { name: string; hex: string; img: string };
-type Print = { name: string; svg: JSX.Element };
+type Print = { name: string; svg: ReactElement };
 
 const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://lh3.googleusercontent.com/aida/ADBb0uiDRz5eQ3CZ92NphgaGh1E072RDBJSCCRkr92JZHXdy0Scoihm4GnphsmCpvK2rdhxkbJ0lOB0VwE1vz7K_ydC8iKMDG9GXBii2fvcmwFu5W_1A3zSmEWvlhfCIvrhP15OdiLh-7cAcFG3c-RT1vuoQ7FUEcirkQ-rAINg4C_X-DQdV_0yCFeD3qyMsOfTIEcSnWY_z9ZqrHGUREn6OWcN0B93DTmgYjOCXFUDkBQRyxXN2I5nOv0L56RM" },
