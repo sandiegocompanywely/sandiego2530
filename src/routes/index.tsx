@@ -1,5 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type ReactElement } from "react";
+import { useState } from "react";
+import printBerry from "@/assets/prints/dtf-137-berry.png";
+import printCoracao from "@/assets/prints/dtf-149-coracao-rachado.png";
+import printOnca from "@/assets/prints/dtf-147-onca-feline.png";
+import printAthletic from "@/assets/prints/dtf-135-athletic.png";
 import { X, ShoppingBag, ChevronLeft, ChevronRight, Heart, Share2, Home, Star, Send, ShoppingCart } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -15,7 +19,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Color = { name: string; hex: string; img: string };
-type Print = { name: string; svg: ReactElement };
+type Print = { name: string; img: string };
 
 const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://lh3.googleusercontent.com/aida/ADBb0uiDRz5eQ3CZ92NphgaGh1E072RDBJSCCRkr92JZHXdy0Scoihm4GnphsmCpvK2rdhxkbJ0lOB0VwE1vz7K_ydC8iKMDG9GXBii2fvcmwFu5W_1A3zSmEWvlhfCIvrhP15OdiLh-7cAcFG3c-RT1vuoQ7FUEcirkQ-rAINg4C_X-DQdV_0yCFeD3qyMsOfTIEcSnWY_z9ZqrHGUREn6OWcN0B93DTmgYjOCXFUDkBQRyxXN2I5nOv0L56RM" },
@@ -25,35 +29,10 @@ const COLORS: Color[] = [
 ];
 
 const PRINTS: Print[] = [
-  {
-    name: "Abstract",
-    svg: (
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <rect x="40" y="40" width="120" height="120" fill="none" stroke="#333" strokeWidth="4" />
-        <rect x="60" y="60" width="80" height="80" fill="none" stroke="#333" strokeWidth="4" />
-        <text x="100" y="110" fontFamily="sans-serif" fontSize="14" textAnchor="middle" fill="#333" fontWeight="bold">ABSTRACT</text>
-      </svg>
-    ),
-  },
-  {
-    name: "Nature",
-    svg: (
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="100" cy="100" r="80" fill="none" stroke="#228B22" strokeWidth="8" />
-        <path d="M60 140 L100 60 L140 140" fill="none" stroke="#228B22" strokeWidth="8" strokeLinejoin="round" />
-        <text x="100" y="170" fontFamily="sans-serif" fontSize="20" textAnchor="middle" fill="#228B22">NATURE</text>
-      </svg>
-    ),
-  },
-  {
-    name: "Essential",
-    svg: (
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <path d="M100 40 L120 90 L180 90 L130 120 L150 170 L100 140 L50 170 L70 120 L20 90 L80 90 Z" fill="none" stroke="#D4AF37" strokeWidth="5" />
-        <text x="100" y="115" fontFamily="sans-serif" fontSize="12" textAnchor="middle" fill="#D4AF37">ESSENTIAL</text>
-      </svg>
-    ),
-  },
+  { name: "DTF 137 - Berry - Letra Azul", img: printBerry },
+  { name: "DTF 149 - Coração Rachado - Letra Bege", img: printCoracao },
+  { name: "DTF 147 - Onça Feline - Letra Bege", img: printOnca },
+  { name: "DTF 135 - Athletic - Colorido", img: printAthletic },
 ];
 
 function Index() {
@@ -100,9 +79,7 @@ function Index() {
             style={{ opacity: fading ? 0 : 1 }}
           />
           <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-20 pointer-events-none">
-            <div className="w-1/3 max-w-[150px] opacity-90 transition-all duration-300">
-              {print.svg}
-            </div>
+            <img src={print.img} alt={print.name} className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300" />
           </div>
         </section>
 
@@ -174,7 +151,7 @@ function Index() {
                       active ? "border-primary" : "border-transparent hover:border-surface-variant"
                     }`}
                   >
-                    {p.svg}
+                    <img src={p.img} alt={p.name} className="w-full h-full object-contain" />
                   </button>
                 );
               })}
