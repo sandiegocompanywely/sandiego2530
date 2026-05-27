@@ -29,35 +29,10 @@ const COLORS: Color[] = [
 ];
 
 const PRINTS: Print[] = [
-  {
-    name: "Abstract",
-    svg: (
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <rect x="40" y="40" width="120" height="120" fill="none" stroke="#333" strokeWidth="4" />
-        <rect x="60" y="60" width="80" height="80" fill="none" stroke="#333" strokeWidth="4" />
-        <text x="100" y="110" fontFamily="sans-serif" fontSize="14" textAnchor="middle" fill="#333" fontWeight="bold">ABSTRACT</text>
-      </svg>
-    ),
-  },
-  {
-    name: "Nature",
-    svg: (
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="100" cy="100" r="80" fill="none" stroke="#228B22" strokeWidth="8" />
-        <path d="M60 140 L100 60 L140 140" fill="none" stroke="#228B22" strokeWidth="8" strokeLinejoin="round" />
-        <text x="100" y="170" fontFamily="sans-serif" fontSize="20" textAnchor="middle" fill="#228B22">NATURE</text>
-      </svg>
-    ),
-  },
-  {
-    name: "Essential",
-    svg: (
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <path d="M100 40 L120 90 L180 90 L130 120 L150 170 L100 140 L50 170 L70 120 L20 90 L80 90 Z" fill="none" stroke="#D4AF37" strokeWidth="5" />
-        <text x="100" y="115" fontFamily="sans-serif" fontSize="12" textAnchor="middle" fill="#D4AF37">ESSENTIAL</text>
-      </svg>
-    ),
-  },
+  { name: "DTF 137 - Berry - Letra Azul", img: printBerry },
+  { name: "DTF 149 - Coração Rachado - Letra Bege", img: printCoracao },
+  { name: "DTF 147 - Onça Feline - Letra Bege", img: printOnca },
+  { name: "DTF 135 - Athletic - Colorido", img: printAthletic },
 ];
 
 function Index() {
