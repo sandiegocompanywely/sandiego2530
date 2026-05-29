@@ -139,20 +139,20 @@ function Index() {
                 </button>
               </div>
             </div>
-            <p className="text-sm text-secondary mb-3">{print.name}</p>
+            <p className="text-sm text-secondary mb-3">{print?.name ?? "—"}</p>
             <div className="carousel-container flex gap-4 overflow-x-auto pb-2 snap-x">
               {PRINTS.map((p, i) => {
                 const active = i === printIdx;
                 return (
                   <button
-                    key={p.name}
+                    key={p.id}
                     aria-label={`Select ${p.name}`}
                     onClick={() => setPrintIdx(i)}
                     className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 bg-surface-container-low p-2 snap-center transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                       active ? "border-primary" : "border-transparent hover:border-surface-variant"
                     }`}
                   >
-                    <img src={p.img} alt={p.name} className="w-full h-full object-contain" />
+                    <img src={p.image_url} alt={p.name} className="w-full h-full object-contain" />
                   </button>
                 );
               })}
