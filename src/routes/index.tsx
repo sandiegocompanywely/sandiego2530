@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import printBerry from "@/assets/prints/dtf-137-berry.png";
-import printCoracao from "@/assets/prints/dtf-149-coracao-rachado.png";
-import printOnca from "@/assets/prints/dtf-147-onca-feline.png";
-import printAthletic from "@/assets/prints/dtf-135-athletic.png";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { listPrints } from "@/lib/prints.functions";
 import { X, ShoppingBag, ChevronLeft, ChevronRight, Heart, Share2, Home, Star, Send, ShoppingCart } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Color = { name: string; hex: string; img: string };
-type Print = { name: string; img: string };
+type Print = { id: string; name: string; image_url: string };
 
 const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://lh3.googleusercontent.com/aida/ADBb0uiDRz5eQ3CZ92NphgaGh1E072RDBJSCCRkr92JZHXdy0Scoihm4GnphsmCpvK2rdhxkbJ0lOB0VwE1vz7K_ydC8iKMDG9GXBii2fvcmwFu5W_1A3zSmEWvlhfCIvrhP15OdiLh-7cAcFG3c-RT1vuoQ7FUEcirkQ-rAINg4C_X-DQdV_0yCFeD3qyMsOfTIEcSnWY_z9ZqrHGUREn6OWcN0B93DTmgYjOCXFUDkBQRyxXN2I5nOv0L56RM" },
@@ -28,14 +27,14 @@ const COLORS: Color[] = [
   { name: "Off-White", hex: "#f5f5f0", img: "https://lh3.googleusercontent.com/aida/ADBb0uhZjBxIXf0lTxUPsXZAjvbbvdapeGvo3U-9dcxBarXHA0h5AoyX25fP3kynuKsXzc5ghomuRiVwai98E2urqd3g7yVizS-2ICVduN0Xa9w2SxcCblpLJpbGJ-Gy6L-44qXrHXs6UFASg8KIwu6p1QXBSEvsgxwiXZLjWSGILob1C0zDH70nG_TInIdiuhPF3IORu7ByFSVfp7qUx3DfBw-NnVnP-JOksv5KHiFx7M2PBjUbx8M6c5PgcA" },
 ];
 
-const PRINTS: Print[] = [
-  { name: "DTF 137 - Berry - Letra Azul", img: printBerry },
-  { name: "DTF 149 - Coração Rachado - Letra Bege", img: printCoracao },
-  { name: "DTF 147 - Onça Feline - Letra Bege", img: printOnca },
-  { name: "DTF 135 - Athletic - Colorido", img: printAthletic },
-];
-
 function Index() {
+  const list = useServerFn(listPrints);
+  const { data } = useQuery({
+    queryKey: ["prints"],
+    queryFn: () => list(),
+  });
+  const PRINTS: Print[] = data?.prints ?? [];
+
   const [colorIdx, setColorIdx] = useState(0);
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
