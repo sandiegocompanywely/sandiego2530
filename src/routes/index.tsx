@@ -78,7 +78,9 @@ function Index() {
             style={{ opacity: fading ? 0 : 1 }}
           />
           <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-20 pointer-events-none">
-            <img src={print.img} alt={print.name} className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300" />
+            {print && (
+              <img src={print.image_url} alt={print.name} className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300" />
+            )}
           </div>
         </section>
 
