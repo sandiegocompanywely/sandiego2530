@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Saint Leez - Estampas DTF" },
+      { name: "description", content: "Joyful Home is a web application for designing and visualizing custom home decor items." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Saint Leez - Estampas DTF" },
+      { property: "og:description", content: "Joyful Home is a web application for designing and visualizing custom home decor items." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Saint Leez - Estampas DTF" },
+      { name: "twitter:description", content: "Joyful Home is a web application for designing and visualizing custom home decor items." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/hEEB2tiqL5YYoTePBgM4OerIdAw2/social-images/social-1780077049554-Apply_logo_to_tshirt_aaa0b36fc9.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/hEEB2tiqL5YYoTePBgM4OerIdAw2/social-images/social-1780077049554-Apply_logo_to_tshirt_aaa0b36fc9.webp" },
     ],
     links: [
       {
