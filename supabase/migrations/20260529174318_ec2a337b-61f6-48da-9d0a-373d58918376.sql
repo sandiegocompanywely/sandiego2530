@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public can read prints bucket" ON storage.objects;

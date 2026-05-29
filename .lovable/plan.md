@@ -1,29 +1,44 @@
-## O que vou fazer
+## Plano: Ativar Lovable Cloud + Painel Admin de Estampas
 
-Trocar as 3 estampas placeholder atuais (Abstract, Nature, Essential) pelas 4 estampas reais que você enviou, usando o nome do arquivo como nome da estampa no app.
+### Objetivo
+Ativar o backend Lovable Cloud e migrar as estampas de um array estático no código para um banco de dados + storage, permitindo upload e gerenciamento via painel admin sem precisar editar código.
 
-### Estampas que entrarão no carrossel
+### Passo 1 — Ativar Lovable Cloud
+- Provisionar o projeto de backend vinculado ao app.
+- Isso habilita banco PostgreSQL, storage de arquivos e server functions.
 
-1. **DTF 137 - Berry - Letra Azul**
-2. **DTF 149 - Coração Rachado - Letra Bege**
-3. **DTF 147 - Onça Feline - Letra Bege**
-4. **DTF 135 - Athletic - Colorido**
+### Passo 2 — Banco de Dados
+Criar a tabela `prints` com as colunas:
+- `id` (uuid, PK)
+- `name` (texto, nome da estampa)
+- `image_url` (texto, URL pública no storage)
+- `created_at` (timestamp)
 
-### Passos
+Inserir as 4 estampas existentes (`dtf-137-berry`, `dtf-149-coracao-rachado`, `dtf-147-onca-feline`, `dtf-135-athletic`) como registros iniciais. As imagens atuais em `src/assets/prints/` serão enviadas ao storage e linkadas na tabela.
 
-1. Copiar os 4 PNGs de `user-uploads://` para `src/assets/prints/` (nomes normalizados sem acento/espaços para o import funcionar, mas o **nome exibido** mantém o original com acentos e maiúsculas).
-2. Atualizar `src/routes/index.tsx`:
-   - Trocar o tipo `Print` de `{ name; svg }` para `{ name; img }` (imagem importada).
-   - Substituir o array `PRINTS` pelas 4 novas estampas.
-   - No preview da camiseta, renderizar `<img>` em vez do SVG inline (mesmo posicionamento e tamanho atuais).
-   - Nos thumbnails do carrossel, mostrar a imagem real em vez do SVG.
+### Passo 3 — Storage de Imagens
+- Configurar um bucket `prints` no storage para armazenar as imagens de estampa.
+- As imagens serão acessíveis por URL pública para o frontend consumir.
 
-### Como adicionar mais estampas depois (Opção 1)
+### Passo 4 — Server Functions (Backend)
+Criar funções seguras para:
+- `listPrints` — listar todas as estampas do banco.
+- `createPrint` — receber nome e arquivo, fazer upload para o storage e salvar o registro no banco.
+- `deletePrint` — remover uma estampa do banco e do storage.
 
-É só você me mandar novos PNGs no chat — eu copio para `src/assets/prints/` e adiciono no array. Quando o catálogo crescer muito (ex.: 20+) ou você quiser autonomia para gerenciar sozinho, partimos para a **Opção 2 (painel admin com Lovable Cloud)**.
+### Passo 5 — Painel Admin
+Criar uma rota `/admin` com interface simples para:
+- Visualizar todas as estampas cadastradas.
+- Fazer upload de novas estampas (arrastar ou selecionar arquivo, digitar nome).
+- Excluir estampas existentes.
 
-### Detalhes técnicos
+### Passo 6 — Integrar Frontend
+Atualizar a página principal (`/`) para:
+- Buscar as estampas do backend via `listPrints` em vez do array `PRINTS` estático.
+- As 4 estampas atuais continuarão aparecendo normalmente após a migração dos dados.
+- O preview da camiseta usará as URLs do storage.
 
-- Imports ES6 (`import berry from "@/assets/prints/dtf-137-berry.png"`) para o Vite otimizar/cachear.
-- Mantém o efeito de fade ao trocar e o mesmo container `aspect-[4/5]`.
-- Sem mudanças no backend, no design system ou em outras telas.
+### Resultado Esperado
+- App funciona exatamente igual para o visitante final.
+- Você pode acessar `/admin` para adicionar ou remover estampas sozinho, sem depender do chat ou de editar código.
+- Novas estampas aparecem automaticamente no carrossel de seleção.
