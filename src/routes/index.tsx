@@ -38,6 +38,9 @@ function Index() {
   const [colorIdx, setColorIdx] = useState(0);
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
+  const SIZES = ["P", "M", "G", "GG"];
 
   const color = COLORS[colorIdx];
   const print = PRINTS[printIdx];
