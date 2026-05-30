@@ -162,6 +162,32 @@ function Index() {
             </div>
           </div>
 
+          <hr className="border-t border-surface-variant" />
+
+          {/* Size selector */}
+          <div>
+            <h2 className="font-display text-xl font-medium mb-4">Tamanho</h2>
+            <div className="flex gap-3">
+              {SIZES.map((size) => {
+                const active = selectedSize === size;
+                return (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    aria-label={`Selecionar tamanho ${size}`}
+                    className={`w-14 h-14 rounded-xl border-2 text-base font-bold transition flex items-center justify-center active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      active
+                        ? "border-primary bg-primary text-on-primary shadow-sm"
+                        : "border-surface-variant bg-surface-container text-on-surface hover:border-primary/50 hover:bg-surface-container-high"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Actions */}
           <div className="mt-auto pt-2 flex flex-col sm:flex-row gap-4">
             <button className="w-full sm:w-1/2 py-3 px-6 rounded-full border-2 border-secondary-container text-on-surface text-sm font-semibold tracking-wider uppercase hover:bg-surface-container-low transition flex items-center justify-center gap-2 active:scale-95">
