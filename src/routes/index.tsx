@@ -297,6 +297,74 @@ function Index() {
           ))}
         </ul>
       </nav>
+
+      {/* Cart Sidebar */}
+      <div
+        onClick={() => setCartOpen(false)}
+        className={`fixed inset-0 z-50 bg-black/40 transition-opacity ${
+          cartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      />
+      <aside
+        className={`fixed top-0 right-0 z-50 h-full w-full max-w-md bg-surface-container-lowest shadow-xl flex flex-col transition-transform duration-300 ${
+          cartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between px-6 h-20 border-b border-surface-variant">
+          <h2 className="font-display text-xl font-medium">Carrinho ({totalCartItems})</h2>
+          <button
+            onClick={() => setCartOpen(false)}
+            aria-label="Fechar carrinho"
+            className="w-10 h-10 flex items-center justify-center text-secondary hover:text-primary transition active:scale-95"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          {cart.length === 0 ? (
+            <p className="text-secondary text-sm text-center mt-8">Seu carrinho está vazio.</p>
+          ) : (
+            <ul className="flex flex-col gap-4">
+              {cart.map((item, idx) => (
+                <li
+                  key={item.id}
+                  className="p-3 rounded-lg border border-surface-variant bg-surface-container-low flex flex-col gap-2"
+                >
+                  <p className="text-sm text-on-surface">
+                    {idx + 1}. {item.quantity}x Camiseta {item.colorName} - Tam {item.size} - Estampa: {item.printName}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQty(item.id, -1)}
+                        aria-label="Diminuir quantidade"
+                        className="w-7 h-7 rounded-md bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition active:scale-95"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="text-sm font-semibold w-6 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQty(item.id, 1)}
+                        aria-label="Aumentar quantidade"
+                        className="w-7 h-7 rounded-md bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition active:scale-95"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      aria-label="Remover item"
+                      className="w-8 h-8 rounded-md text-red-600 hover:bg-red-50 flex items-center justify-center transition active:scale-95"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </aside>
     </div>
   );
 }
