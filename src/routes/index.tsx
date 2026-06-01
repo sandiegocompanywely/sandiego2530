@@ -260,14 +260,14 @@ function Index() {
           </div>
 
           {/* Actions */}
-          <div className="mt-auto pt-2 flex flex-col sm:flex-row gap-4">
-            <button className="w-full sm:w-1/2 py-3 px-6 rounded-full border-2 border-secondary-container text-on-surface text-sm font-semibold tracking-wider uppercase hover:bg-surface-container-low transition flex items-center justify-center gap-2 active:scale-95">
-              <Heart className="w-5 h-5" />
-              Salvar Favorito
-            </button>
-            <button className="w-full sm:w-1/2 py-3 px-6 rounded-full bg-primary text-on-primary text-sm font-semibold tracking-wider uppercase hover:opacity-90 transition flex items-center justify-center gap-2 active:scale-95 shadow-sm hover:shadow-md">
-              <Share2 className="w-5 h-5" />
-              Exportar Imagem
+          <div className="mt-auto pt-2">
+            <button
+              onClick={addToCart}
+              disabled={!selectedSize || !print}
+              className="w-full py-3 px-6 rounded-full bg-green-600 text-white text-sm font-semibold tracking-wider uppercase hover:bg-green-700 transition flex items-center justify-center gap-2 active:scale-95 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              Adicionar ao Carrinho
             </button>
           </div>
         </section>
