@@ -44,6 +44,54 @@ function Index() {
 
   const SIZES = ["P", "M", "G", "GG"];
 
+  type CartItem = {
+    id: string;
+    colorName: string;
+    printId: string;
+    printName: string;
+    size: string;
+    quantity: number;
+  };
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const totalCartItems = cart.reduce((s, i) => s + i.quantity, 0);
+
+  const addToCart = () => {
+    if (!selectedSize || !print) return;
+    const key = `${color.name}__${print.id}__${selectedSize}`;
+    setCart((prev) => {
+      const existing = prev.find((i) => i.id === key);
+      if (existing) {
+        return prev.map((i) => (i.id === key ? { ...i, quantity: i.quantity + 1 } : i));
+      }
+      return [
+        ...prev,
+        {
+          id: key,
+          colorName: color.name,
+          printId: print.id,
+          printName: print.name,
+          size: selectedSize,
+          quantity: 1,
+        },
+      ];
+    });
+    setCartOpen(true);
+  };
+
+  const updateQty = (id: string, delta: number) => {
+    setCart((prev) =>
+      prev
+        .map((i) => (i.id === id ? { ...i, quantity: i.quantity + delta } : i))
+        .filter((i) => i.quantity > 0),
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setCart((prev) => prev.filter((i) => i.id !== id));
+  };
+
   useEffect(() => {
     const el = printItemRefs.current[printIdx];
     if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
