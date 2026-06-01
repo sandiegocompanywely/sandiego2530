@@ -8,9 +8,9 @@ import { X, ShoppingBag, ChevronLeft, ChevronRight, Heart, Share2, Home, Star, S
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Monte seu Look — Camiseta Personalizada" },
+      { title: "Escolha sua estampa! San Diego Company" },
       { name: "description", content: "Personalize sua camiseta: escolha a cor base e a estampa do seu jeito." },
-      { property: "og:title", content: "Monte seu Look" },
+      { property: "og:title", content: "Escolha sua estampa! San Diego Company" },
       { property: "og:description", content: "Personalize sua camiseta: escolha a cor base e a estampa do seu jeito." },
     ],
   }),
@@ -69,7 +69,7 @@ function Index() {
             <X className="w-6 h-6" />
           </button>
           <h1 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-on-surface">
-            Monte seu Look
+            Escolha sua estampa! San Diego Company
           </h1>
           <button aria-label="Shopping Bag" className="w-10 h-10 flex items-center justify-center text-primary hover:opacity-80 transition active:scale-95">
             <ShoppingBag className="w-6 h-6" />
