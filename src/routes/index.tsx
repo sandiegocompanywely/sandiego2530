@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
-import { X, ShoppingBag, ChevronLeft, ChevronRight, Heart, Share2, Home, Star, Send, ShoppingCart } from "lucide-react";
+import { X, ShoppingBag, ChevronLeft, ChevronRight, Home, Star, Send, ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
