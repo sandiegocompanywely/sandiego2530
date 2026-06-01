@@ -364,6 +364,37 @@ function Index() {
             </ul>
           )}
         </div>
+        {cart.length > 0 && (
+          <div className="border-t border-surface-variant px-6 py-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <div className="p-3 rounded-lg bg-surface-container-low border border-surface-variant text-sm text-on-surface">
+                Total de camisetas: {totalCartItems} camisetas
+              </div>
+              <div className="p-3 rounded-lg bg-surface-container-low border border-surface-variant text-sm font-semibold text-on-surface">
+                Valor total: R$ {(totalCartItems * 15).toFixed(2).replace(".", ",")}
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                const totalValue = (totalCartItems * 15).toFixed(2).replace(".", ",");
+                const items = cart
+                  .map(
+                    (item, idx) =>
+                      `${idx + 1}. ${item.quantity}x Camiseta ${item.colorName} - Tam ${item.size} - Estampa: ${item.printName}`,
+                  )
+                  .join("\n");
+                const message = `Olá! 👋 Acabei de montar um pedido de camisetas no app. Seguem os detalhes:\n\nRESUMO DO PEDIDO:\n${items}\n\nTotal da compra: R$ ${totalValue}\n\nGostaria de confirmar o pedido. Como podemos fechar a forma de pagamento e os detalhes da entrega? Fico no aguardo!`;
+                window.open(
+                  `https://wa.me/5547997408889/?text=${encodeURIComponent(message)}`,
+                  "_blank",
+                );
+              }}
+              className="w-full py-3 px-6 rounded-full bg-green-600 text-white text-sm font-semibold tracking-wider uppercase hover:bg-green-700 transition active:scale-95 shadow-sm hover:shadow-md"
+            >
+              Confirmar pedido via WhatsApp!
+            </button>
+          </div>
+        )}
       </aside>
     </div>
   );
