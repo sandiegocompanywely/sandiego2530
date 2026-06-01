@@ -119,8 +119,17 @@ function Index() {
           <h1 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-on-surface">
             Escolha sua estampa! San Diego Company
           </h1>
-          <button aria-label="Shopping Bag" className="w-10 h-10 flex items-center justify-center text-primary hover:opacity-80 transition active:scale-95">
+          <button
+            onClick={() => setCartOpen((o) => !o)}
+            aria-label="Shopping Bag"
+            className="relative w-10 h-10 flex items-center justify-center text-primary hover:opacity-80 transition active:scale-95"
+          >
             <ShoppingBag className="w-6 h-6" />
+            {totalCartItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">
+                {totalCartItems}
+              </span>
+            )}
           </button>
         </div>
       </header>
