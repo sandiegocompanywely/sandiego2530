@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
@@ -39,8 +39,15 @@ function Index() {
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const printsGridRef = useRef<HTMLDivElement>(null);
+  const printItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const SIZES = ["P", "M", "G", "GG"];
+
+  useEffect(() => {
+    const el = printItemRefs.current[printIdx];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [printIdx]);
 
   const color = COLORS[colorIdx];
   const print = PRINTS[printIdx];
