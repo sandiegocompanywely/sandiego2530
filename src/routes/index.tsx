@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
@@ -39,8 +39,15 @@ function Index() {
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const printsGridRef = useRef<HTMLDivElement>(null);
+  const printItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const SIZES = ["P", "M", "G", "GG"];
+
+  useEffect(() => {
+    const el = printItemRefs.current[printIdx];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [printIdx]);
 
   const color = COLORS[colorIdx];
   const print = PRINTS[printIdx];
@@ -143,15 +150,22 @@ function Index() {
               </div>
             </div>
             <p className="text-sm text-secondary mb-3">{print?.name ?? "—"}</p>
-            <div className="carousel-container flex gap-4 overflow-x-auto pb-2 snap-x">
+            <div
+              ref={printsGridRef}
+              className="grid grid-cols-4 gap-3 overflow-y-auto overflow-x-hidden pb-4 pr-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
+              style={{ maxHeight: "calc(3 * 5rem + 2 * 0.75rem + 1rem)" }}
+            >
               {PRINTS.map((p, i) => {
                 const active = i === printIdx;
                 return (
                   <button
                     key={p.id}
+                    ref={(el) => {
+                      printItemRefs.current[i] = el;
+                    }}
                     aria-label={`Select ${p.name}`}
                     onClick={() => setPrintIdx(i)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 bg-surface-container-low p-2 snap-center transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    className={`h-20 rounded-lg border-2 bg-surface-container-low p-2 transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                       active ? "border-primary" : "border-transparent hover:border-surface-variant"
                     }`}
                   >
