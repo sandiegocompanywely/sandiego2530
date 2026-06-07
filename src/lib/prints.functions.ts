@@ -5,7 +5,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const listPrints = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabaseAdmin
     .from("prints")
-    .select("id, name, image_url")
+    .select("id, name, image_url, scale")
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
   return { prints: data ?? [] };
@@ -17,6 +17,7 @@ const createSchema = z.object({
   fileName: z.string().min(1).max(255),
   fileBase64: z.string().min(1),
   contentType: z.string().min(1).max(100),
+  scale: z.number().int().min(50).max(120).default(100),
 });
 
 export const createPrint = createServerFn({ method: "POST" })
@@ -48,8 +49,9 @@ export const createPrint = createServerFn({ method: "POST" })
         name: data.name,
         image_url: pub.publicUrl,
         storage_path: storagePath,
+        scale: data.scale,
       })
-      .select("id, name, image_url")
+      .select("id, name, image_url, scale")
       .single();
     if (insertError) throw new Error(insertError.message);
 

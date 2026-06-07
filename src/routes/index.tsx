@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Color = { name: string; hex: string; img: string };
-type Print = { id: string; name: string; image_url: string };
+type Print = { id: string; name: string; image_url: string; scale?: number | null };
 
 const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://gxquualboudegzptrfqs.supabase.co/storage/v1/object/public/prints/shirts/white.jpg" },
@@ -146,7 +146,12 @@ function Index() {
           />
           <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-36 pl-4 pointer-events-none">
             {print && (
-              <img src={print.image_url} alt={print.name} className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300" />
+              <img
+                src={print.image_url}
+                alt={print.name}
+                className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300"
+                style={{ transform: `scale(${(print.scale ?? 100) / 100})`, transformOrigin: "center" }}
+              />
             )}
           </div>
         </section>

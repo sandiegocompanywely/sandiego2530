@@ -40,6 +40,7 @@ function AdminPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [scale, setScale] = useState(100);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -71,11 +72,13 @@ function AdminPage() {
           fileName: file.name,
           fileBase64,
           contentType: file.type || "image/png",
+          scale,
         },
       });
       setSuccess(`Estampa "${name}" adicionada!`);
       setName("");
       setFile(null);
+      setScale(100);
       (document.getElementById("file-input") as HTMLInputElement | null)?.value &&
         ((document.getElementById("file-input") as HTMLInputElement).value = "");
       qc.invalidateQueries({ queryKey: ["prints"] });
@@ -146,6 +149,20 @@ function AdminPage() {
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 className="w-full text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Tamanho da Estampa: <span className="text-secondary">{scale}%</span>
+              </label>
+              <input
+                type="range"
+                min={50}
+                max={120}
+                step={1}
+                value={scale}
+                onChange={(e) => setScale(Number(e.target.value))}
+                className="w-full accent-primary"
               />
             </div>
 
