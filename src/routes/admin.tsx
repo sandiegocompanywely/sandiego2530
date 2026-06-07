@@ -151,6 +151,20 @@ function AdminPage() {
                 className="w-full text-sm"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Tamanho da Estampa: <span className="text-secondary">{scale}%</span>
+              </label>
+              <input
+                type="range"
+                min={50}
+                max={120}
+                step={1}
+                value={scale}
+                onChange={(e) => setScale(Number(e.target.value))}
+                className="w-full accent-primary"
+              />
+            </div>
 
             {error && (
               <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
