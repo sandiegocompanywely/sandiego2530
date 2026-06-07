@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Color = { name: string; hex: string; img: string };
-type Print = { id: string; name: string; image_url: string };
+type Print = { id: string; name: string; image_url: string; scale?: number | null };
 
 const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://gxquualboudegzptrfqs.supabase.co/storage/v1/object/public/prints/shirts/white.jpg" },
