@@ -40,6 +40,7 @@ function AdminPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [scale, setScale] = useState(100);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
