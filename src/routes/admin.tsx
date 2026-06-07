@@ -72,11 +72,13 @@ function AdminPage() {
           fileName: file.name,
           fileBase64,
           contentType: file.type || "image/png",
+          scale,
         },
       });
       setSuccess(`Estampa "${name}" adicionada!`);
       setName("");
       setFile(null);
+      setScale(100);
       (document.getElementById("file-input") as HTMLInputElement | null)?.value &&
         ((document.getElementById("file-input") as HTMLInputElement).value = "");
       qc.invalidateQueries({ queryKey: ["prints"] });
