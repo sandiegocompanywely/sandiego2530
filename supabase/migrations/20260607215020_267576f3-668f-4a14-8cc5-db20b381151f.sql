@@ -1,0 +1,1 @@
+ALTER TABLE public.prints ADD COLUMN scale integer NOT NULL DEFAULT 100;

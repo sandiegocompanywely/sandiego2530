@@ -20,6 +20,7 @@ export type Database = {
           id: string
           image_url: string
           name: string
+          scale: number
           storage_path: string | null
         }
         Insert: {
@@ -27,6 +28,7 @@ export type Database = {
           id?: string
           image_url: string
           name: string
+          scale?: number
           storage_path?: string | null
         }
         Update: {
@@ -34,6 +36,7 @@ export type Database = {
           id?: string
           image_url?: string
           name?: string
+          scale?: number
           storage_path?: string | null
         }
         Relationships: []
