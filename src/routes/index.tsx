@@ -144,7 +144,7 @@ function Index() {
             className="w-full h-full object-cover absolute inset-0 z-0 transition-opacity duration-300"
             style={{ opacity: fading ? 0 : 1 }}
           />
-          <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-36 pl-4 pointer-events-none">
+          <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-16 md:pb-36 pl-4 pointer-events-none">
             {print && (
               <img
                 src={print.image_url}
@@ -278,30 +278,6 @@ function Index() {
         </section>
       </main>
 
-      {/* Bottom nav (mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest border-t border-secondary-container rounded-t-xl">
-        <ul className="flex justify-around items-center px-4 py-3">
-          {[
-            { icon: Home, label: "Início", active: false },
-            { icon: Star, label: "Favoritos", active: false },
-            { icon: Send, label: "Exportar", active: true },
-            { icon: ShoppingCart, label: "Carrinho", active: false },
-          ].map(({ icon: Icon, label, active }) => (
-            <li key={label}>
-              <a
-                href="#"
-                aria-label={label}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition active:scale-90 ${
-                  active ? "text-primary font-bold" : "text-secondary hover:bg-surface-container-high"
-                }`}
-              >
-                <Icon className="w-5 h-5 mb-1" fill={active ? "currentColor" : "none"} />
-                <span className="text-xs font-medium">{label}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
 
       {/* Cart Sidebar */}
       <div
