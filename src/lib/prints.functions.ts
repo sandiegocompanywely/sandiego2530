@@ -58,6 +58,29 @@ export const createPrint = createServerFn({ method: "POST" })
     return { print: row };
   });
 
+const updateSchema = z.object({
+  password: z.string().min(1),
+  id: z.string().uuid(),
+  name: z.string().min(1).max(255),
+  scale: z.number().int().min(50).max(120),
+});
+
+export const updatePrint = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => updateSchema.parse(input))
+  .handler(async ({ data }) => {
+    if (data.password !== process.env.ADMIN_PASSWORD) {
+      throw new Error("Senha incorreta");
+    }
+    const { data: row, error } = await supabaseAdmin
+      .from("prints")
+      .update({ name: data.name, scale: data.scale })
+      .eq("id", data.id)
+      .select("id, name, image_url, scale")
+      .single();
+    if (error) throw new Error(error.message);
+    return { print: row };
+  });
+
 const deleteSchema = z.object({
   password: z.string().min(1),
   id: z.string().uuid(),
