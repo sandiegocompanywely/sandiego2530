@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { Trash2, Upload, Loader2 } from "lucide-react";
+import { Trash2, Upload, Loader2, Save, X } from "lucide-react";
 import {
   listPrints,
   createPrint,
+  updatePrint,
   deletePrint,
 } from "@/lib/prints.functions";
 
@@ -34,6 +35,7 @@ function fileToBase64(file: File): Promise<string> {
 function AdminPage() {
   const list = useServerFn(listPrints);
   const create = useServerFn(createPrint);
+  const update = useServerFn(updatePrint);
   const remove = useServerFn(deletePrint);
   const qc = useQueryClient();
 
@@ -41,6 +43,8 @@ function AdminPage() {
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [scale, setScale] = useState(100);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -52,35 +56,62 @@ function AdminPage() {
 
   const prints = data?.prints ?? [];
 
+  const resetForm = () => {
+    setName("");
+    setFile(null);
+    setScale(100);
+    setEditingId(null);
+    setEditingName("");
+    const el = document.getElementById("file-input") as HTMLInputElement | null;
+    if (el) el.value = "";
+  };
+
+  const startEdit = (p: { id: string; name: string; scale: number }) => {
+    setEditingId(p.id);
+    setEditingName(p.name);
+    setName(p.name);
+    setScale(p.scale ?? 100);
+    setFile(null);
+    setError(null);
+    setSuccess(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (!password || !name || !file) {
+    if (!password || !name) {
       setError("Preencha todos os campos");
       return;
     }
 
     setSubmitting(true);
     try {
-      const fileBase64 = await fileToBase64(file);
-      await create({
-        data: {
-          password,
-          name,
-          fileName: file.name,
-          fileBase64,
-          contentType: file.type || "image/png",
-          scale,
-        },
-      });
-      setSuccess(`Estampa "${name}" adicionada!`);
-      setName("");
-      setFile(null);
-      setScale(100);
-      (document.getElementById("file-input") as HTMLInputElement | null)?.value &&
-        ((document.getElementById("file-input") as HTMLInputElement).value = "");
+      if (editingId) {
+        await update({ data: { password, id: editingId, name, scale } });
+        setSuccess(`Estampa "${name}" atualizada!`);
+      } else {
+        if (!file) {
+          setError("Selecione um arquivo");
+          setSubmitting(false);
+          return;
+        }
+        const fileBase64 = await fileToBase64(file);
+        await create({
+          data: {
+            password,
+            name,
+            fileName: file.name,
+            fileBase64,
+            contentType: file.type || "image/png",
+            scale,
+          },
+        });
+        setSuccess(`Estampa "${name}" adicionada!`);
+      }
+      resetForm();
       qc.invalidateQueries({ queryKey: ["prints"] });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao enviar");
@@ -89,7 +120,8 @@ function AdminPage() {
     }
   };
 
-  const handleDelete = async (id: string, printName: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string, printName: string) => {
+    e.stopPropagation();
     if (!password) {
       setError("Digite a senha primeiro");
       return;
@@ -99,11 +131,14 @@ function AdminPage() {
     setError(null);
     try {
       await remove({ data: { password, id } });
+      if (editingId === id) resetForm();
       qc.invalidateQueries({ queryKey: ["prints"] });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao excluir");
     }
   };
+
+  const isEditing = editingId !== null;
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
@@ -113,7 +148,9 @@ function AdminPage() {
         </h1>
 
         <section className="bg-surface-container-lowest p-6 rounded-xl border border-surface-variant mb-8">
-          <h2 className="font-display text-xl mb-4">Adicionar nova estampa</h2>
+          <h2 className="font-display text-xl mb-4">
+            {isEditing ? `Editando Estampa: ${editingName}` : "Adicionar nova estampa"}
+          </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -139,18 +176,20 @@ function AdminPage() {
                 placeholder="DTF 150 - Nome da estampa"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Arquivo de imagem (PNG recomendado)
-              </label>
-              <input
-                id="file-input"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                className="w-full text-sm"
-              />
-            </div>
+            {!isEditing && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Arquivo de imagem (PNG recomendado)
+                </label>
+                <input
+                  id="file-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  className="w-full text-sm"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Tamanho da Estampa: <span className="text-secondary">{scale}%</span>
@@ -177,18 +216,37 @@ function AdminPage() {
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 py-2 px-5 rounded-full bg-primary text-on-primary text-sm font-semibold uppercase tracking-wider hover:opacity-90 transition disabled:opacity-50"
-            >
-              {submitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Upload className="w-4 h-4" />
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-2 py-2 px-5 rounded-full bg-primary text-on-primary text-sm font-semibold uppercase tracking-wider hover:opacity-90 transition disabled:opacity-50"
+              >
+                {submitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isEditing ? (
+                  <Save className="w-4 h-4" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                {submitting
+                  ? "Enviando..."
+                  : isEditing
+                    ? "Salvar Alterações"
+                    : "Adicionar"}
+              </button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 py-2 px-5 rounded-full border border-surface-variant text-sm font-semibold uppercase tracking-wider hover:bg-surface-container-low transition disabled:opacity-50"
+                >
+                  <X className="w-4 h-4" />
+                  Cancelar Edição
+                </button>
               )}
-              {submitting ? "Enviando..." : "Adicionar"}
-            </button>
+            </div>
           </form>
         </section>
 
@@ -200,28 +258,33 @@ function AdminPage() {
             <p className="text-sm text-secondary">Carregando...</p>
           ) : (
             <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {prints.map((p) => (
-                <li
-                  key={p.id}
-                  className="bg-surface-container-low rounded-lg p-3 border border-surface-variant flex flex-col gap-2"
-                >
-                  <div className="aspect-square bg-white rounded flex items-center justify-center overflow-hidden">
-                    <img
-                      src={p.image_url}
-                      alt={p.name}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <p className="text-xs font-medium line-clamp-2">{p.name}</p>
-                  <button
-                    onClick={() => handleDelete(p.id, p.name)}
-                    className="text-xs text-red-600 hover:text-red-800 inline-flex items-center gap-1 self-start"
+              {prints.map((p) => {
+                const selected = editingId === p.id;
+                return (
+                  <li
+                    key={p.id}
+                    onClick={() => startEdit(p)}
+                    className={`bg-surface-container-low rounded-lg p-3 border flex flex-col gap-2 cursor-pointer transition hover:border-primary ${selected ? "border-primary ring-2 ring-primary" : "border-surface-variant"}`}
                   >
-                    <Trash2 className="w-3 h-3" />
-                    Excluir
-                  </button>
-                </li>
-              ))}
+                    <div className="aspect-square bg-white rounded flex items-center justify-center overflow-hidden">
+                      <img
+                        src={p.image_url}
+                        alt={p.name}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <p className="text-xs font-medium line-clamp-2">{p.name}</p>
+                    <p className="text-[10px] text-secondary">Escala: {p.scale ?? 100}%</p>
+                    <button
+                      onClick={(e) => handleDelete(e, p.id, p.name)}
+                      className="text-xs text-red-600 hover:text-red-800 inline-flex items-center gap-1 self-start"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Excluir
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
