@@ -149,7 +149,7 @@ function Index() {
               <img
                 src={print.image_url}
                 alt={print.name}
-                className="w-1/3 max-w-[150px] opacity-90 object-contain transition-all duration-300"
+                className="w-1/3 opacity-90 object-contain transition-all duration-300"
                 style={{ transform: `scale(${(print.scale ?? 100) / 100})`, transformOrigin: "center" }}
               />
             )}
