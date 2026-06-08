@@ -74,7 +74,6 @@ function AdminPage() {
     setFile(null);
     setError(null);
     setSuccess(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -147,7 +146,7 @@ function AdminPage() {
           Painel de Estampas
         </h1>
 
-        <section className="bg-surface-container-lowest p-6 rounded-xl border border-surface-variant mb-8">
+        <section className="bg-surface-container-lowest p-6 rounded-xl border border-surface-variant mb-8 sticky top-4 z-20 shadow-md">
           <h2 className="font-display text-xl mb-4">
             {isEditing ? `Editando Estampa: ${editingName}` : "Adicionar nova estampa"}
           </h2>
@@ -257,14 +256,14 @@ function AdminPage() {
           {isLoading ? (
             <p className="text-sm text-secondary">Carregando...</p>
           ) : (
-            <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <ul className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
               {prints.map((p) => {
                 const selected = editingId === p.id;
                 return (
                   <li
                     key={p.id}
                     onClick={() => startEdit(p)}
-                    className={`bg-surface-container-low rounded-lg p-3 border flex flex-col gap-2 cursor-pointer transition hover:border-primary ${selected ? "border-primary ring-2 ring-primary" : "border-surface-variant"}`}
+                    className={`bg-surface-container-low rounded-md p-1.5 border flex flex-col gap-1 cursor-pointer transition hover:border-primary ${selected ? "border-primary ring-2 ring-primary" : "border-surface-variant"}`}
                   >
                     <div className="aspect-square bg-white rounded flex items-center justify-center overflow-hidden">
                       <img
@@ -273,15 +272,17 @@ function AdminPage() {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <p className="text-xs font-medium line-clamp-2">{p.name}</p>
-                    <p className="text-[10px] text-secondary">Escala: {p.scale ?? 100}%</p>
-                    <button
-                      onClick={(e) => handleDelete(e, p.id, p.name)}
-                      className="text-xs text-red-600 hover:text-red-800 inline-flex items-center gap-1 self-start"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      Excluir
-                    </button>
+                    <p className="text-[10px] font-medium line-clamp-1 leading-tight">{p.name}</p>
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-[9px] text-secondary">{p.scale ?? 100}%</span>
+                      <button
+                        onClick={(e) => handleDelete(e, p.id, p.name)}
+                        className="text-red-600 hover:text-red-800 p-0.5"
+                        aria-label="Excluir"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   </li>
                 );
               })}
