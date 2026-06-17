@@ -63,6 +63,9 @@ const updateSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(255),
   scale: z.number().int().min(50).max(120),
+  fileName: z.string().min(1).max(255).optional(),
+  fileBase64: z.string().min(1).optional(),
+  contentType: z.string().min(1).max(100).optional(),
 });
 
 export const updatePrint = createServerFn({ method: "POST" })
@@ -71,9 +74,50 @@ export const updatePrint = createServerFn({ method: "POST" })
     if (data.password !== process.env.ADMIN_PASSWORD) {
       throw new Error("Senha incorreta");
     }
+
+    const updates: {
+      name: string;
+      scale: number;
+      image_url?: string;
+      storage_path?: string;
+    } = { name: data.name, scale: data.scale };
+
+    if (data.fileBase64 && data.fileName && data.contentType) {
+      const { data: existing } = await supabaseAdmin
+        .from("prints")
+        .select("storage_path")
+        .eq("id", data.id)
+        .single();
+
+      const safeName = data.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const storagePath = `${Date.now()}-${safeName}`;
+      const buffer = Buffer.from(data.fileBase64, "base64");
+
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from("prints")
+        .upload(storagePath, buffer, {
+          contentType: data.contentType,
+          upsert: false,
+        });
+      if (uploadError) throw new Error(uploadError.message);
+
+      const { data: pub } = supabaseAdmin.storage
+        .from("prints")
+        .getPublicUrl(storagePath);
+
+      updates.image_url = pub.publicUrl;
+      updates.storage_path = storagePath;
+
+      if (existing?.storage_path) {
+        await supabaseAdmin.storage
+          .from("prints")
+          .remove([existing.storage_path]);
+      }
+    }
+
     const { data: row, error } = await supabaseAdmin
       .from("prints")
-      .update({ name: data.name, scale: data.scale })
+      .update(updates)
       .eq("id", data.id)
       .select("id, name, image_url, scale")
       .single();

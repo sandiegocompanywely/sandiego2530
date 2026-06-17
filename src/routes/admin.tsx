@@ -89,7 +89,21 @@ function AdminPage() {
     setSubmitting(true);
     try {
       if (editingId) {
-        await update({ data: { password, id: editingId, name, scale } });
+        const payload: {
+          password: string;
+          id: string;
+          name: string;
+          scale: number;
+          fileName?: string;
+          fileBase64?: string;
+          contentType?: string;
+        } = { password, id: editingId, name, scale };
+        if (file) {
+          payload.fileBase64 = await fileToBase64(file);
+          payload.fileName = file.name;
+          payload.contentType = file.type || "image/png";
+        }
+        await update({ data: payload });
         setSuccess(`Estampa "${name}" atualizada!`);
       } else {
         if (!file) {
@@ -175,20 +189,25 @@ function AdminPage() {
                 placeholder="DTF 150 - Nome da estampa"
               />
             </div>
-            {!isEditing && (
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Arquivo de imagem (PNG recomendado)
-                </label>
-                <input
-                  id="file-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                  className="w-full text-sm"
-                />
-              </div>
-            )}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                {isEditing
+                  ? "Substituir imagem (opcional)"
+                  : "Arquivo de imagem (PNG recomendado)"}
+              </label>
+              <input
+                id="file-input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="w-full text-sm"
+              />
+              {isEditing && (
+                <p className="text-xs text-secondary mt-1">
+                  Deixe em branco para manter a imagem atual.
+                </p>
+              )}
+            </div>
             <div>
               <label className="block text-sm font-medium mb-1">
                 Tamanho da Estampa: <span className="text-secondary">{scale}%</span>
