@@ -189,20 +189,25 @@ function AdminPage() {
                 placeholder="DTF 150 - Nome da estampa"
               />
             </div>
-            {!isEditing && (
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Arquivo de imagem (PNG recomendado)
-                </label>
-                <input
-                  id="file-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                  className="w-full text-sm"
-                />
-              </div>
-            )}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                {isEditing
+                  ? "Substituir imagem (opcional)"
+                  : "Arquivo de imagem (PNG recomendado)"}
+              </label>
+              <input
+                id="file-input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="w-full text-sm"
+              />
+              {isEditing && (
+                <p className="text-xs text-secondary mt-1">
+                  Deixe em branco para manter a imagem atual.
+                </p>
+              )}
+            </div>
             <div>
               <label className="block text-sm font-medium mb-1">
                 Tamanho da Estampa: <span className="text-secondary">{scale}%</span>
