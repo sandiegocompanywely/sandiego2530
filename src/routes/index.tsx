@@ -41,6 +41,8 @@ function Index() {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const printsGridRef = useRef<HTMLDivElement>(null);
   const printItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const SIZES = ["P", "M", "G", "GG"];
 
@@ -137,7 +139,24 @@ function Index() {
       {/* Main */}
       <main className="flex-grow flex flex-col md:flex-row max-w-[1280px] mx-auto w-full px-4 md:px-6 gap-6 md:gap-12 py-6">
         {/* Preview */}
-        <section className="w-full md:w-3/5 relative aspect-[4/5] bg-surface-container-lowest rounded-xl overflow-hidden product-preview-shadow flex items-center justify-center">
+        <section
+          className="w-full md:w-3/5 relative aspect-[4/5] bg-surface-container-lowest rounded-xl overflow-hidden product-preview-shadow flex items-center justify-center touch-pan-y select-none"
+          onTouchStart={(e) => {
+            touchStartX.current = e.touches[0].clientX;
+            touchStartY.current = e.touches[0].clientY;
+          }}
+          onTouchEnd={(e) => {
+            if (touchStartX.current === null || touchStartY.current === null) return;
+            const dx = e.changedTouches[0].clientX - touchStartX.current;
+            const dy = e.changedTouches[0].clientY - touchStartY.current;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && PRINTS.length > 0) {
+              if (dx < 0) setPrintIdx((printIdx + 1) % PRINTS.length);
+              else setPrintIdx((printIdx - 1 + PRINTS.length) % PRINTS.length);
+            }
+            touchStartX.current = null;
+            touchStartY.current = null;
+          }}
+        >
           <img
             alt={`${color.name} t-shirt`}
             src={color.img}
@@ -154,6 +173,24 @@ function Index() {
               />
             )}
           </div>
+          {PRINTS.length > 1 && (
+            <>
+              <button
+                onClick={() => setPrintIdx((printIdx - 1 + PRINTS.length) % PRINTS.length)}
+                aria-label="Estampa anterior"
+                className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm flex items-center justify-center transition active:scale-95"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setPrintIdx((printIdx + 1) % PRINTS.length)}
+                aria-label="Próxima estampa"
+                className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm flex items-center justify-center transition active:scale-95"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
         </section>
 
         {/* Controls */}
