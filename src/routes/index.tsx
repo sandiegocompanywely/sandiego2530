@@ -96,7 +96,15 @@ function Index() {
 
   useEffect(() => {
     const el = printItemRefs.current[printIdx];
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const container = printsGridRef.current;
+    if (!el || !container) return;
+    const elTop = el.offsetTop - container.offsetTop;
+    const elBottom = elTop + el.offsetHeight;
+    if (elTop < container.scrollTop) {
+      container.scrollTo({ top: elTop, behavior: "smooth" });
+    } else if (elBottom > container.scrollTop + container.clientHeight) {
+      container.scrollTo({ top: elBottom - container.clientHeight, behavior: "smooth" });
+    }
   }, [printIdx]);
 
   const color = COLORS[colorIdx];
