@@ -41,6 +41,8 @@ function Index() {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const printsGridRef = useRef<HTMLDivElement>(null);
   const printItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const SIZES = ["P", "M", "G", "GG"];
 
