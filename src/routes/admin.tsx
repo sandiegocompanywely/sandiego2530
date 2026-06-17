@@ -89,7 +89,21 @@ function AdminPage() {
     setSubmitting(true);
     try {
       if (editingId) {
-        await update({ data: { password, id: editingId, name, scale } });
+        const payload: {
+          password: string;
+          id: string;
+          name: string;
+          scale: number;
+          fileName?: string;
+          fileBase64?: string;
+          contentType?: string;
+        } = { password, id: editingId, name, scale };
+        if (file) {
+          payload.fileBase64 = await fileToBase64(file);
+          payload.fileName = file.name;
+          payload.contentType = file.type || "image/png";
+        }
+        await update({ data: payload });
         setSuccess(`Estampa "${name}" atualizada!`);
       } else {
         if (!file) {
