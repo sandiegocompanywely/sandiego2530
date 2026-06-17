@@ -171,7 +171,7 @@ function Index() {
             className="w-full h-full object-cover absolute inset-0 z-0 transition-opacity duration-300"
             style={{ opacity: fading ? 0 : 1 }}
           />
-          <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-18 pointer-events-none">
+          <div className="absolute inset-0 z-10 flex items-center justify-center flex-col pb-14 pl-1 pointer-events-none">
             {print && (
               <img
                 src={print.image_url}
