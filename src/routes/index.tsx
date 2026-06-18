@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
+import { useState, useRef, useCallback, useMemo, memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
@@ -154,18 +154,8 @@ function Index() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
-  useEffect(() => {
-    const el = printItemRefs.current[printIdx];
-    const container = printsGridRef.current;
-    if (!el || !container) return;
-    const elTop = el.offsetTop - container.offsetTop;
-    const elBottom = elTop + el.offsetHeight;
-    if (elTop < container.scrollTop) {
-      container.scrollTo({ top: elTop, behavior: "smooth" });
-    } else if (elBottom > container.scrollTop + container.clientHeight) {
-      container.scrollTo({ top: elBottom - container.clientHeight, behavior: "smooth" });
-    }
-  }, [printIdx]);
+  // Intencionalmente sem auto-scroll: ao selecionar uma estampa, a posição
+  // de rolagem da lista e da página deve permanecer estática.
 
   const changeColor = useCallback((i: number) => {
     setFading(true);
