@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
-import { X, ShoppingBag, ChevronLeft, ChevronRight, Home, Star, Send, ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
+import { X, ShoppingBag, ChevronLeft, ChevronRight, ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,11 +27,78 @@ const COLORS: Color[] = [
   { name: "Off-White", hex: "#f5f5f0", img: "https://gxquualboudegzptrfqs.supabase.co/storage/v1/object/public/prints/shirts/offwhite.jpg" },
 ];
 
+const SIZES = ["P", "M", "G", "GG"] as const;
+
+type CartItem = {
+  id: string;
+  colorName: string;
+  printId: string;
+  printName: string;
+  size: string;
+  quantity: number;
+};
+
+const ColorSwatch = memo(function ColorSwatch({
+  color,
+  active,
+  onSelect,
+}: {
+  color: Color;
+  active: boolean;
+  onSelect: (name: string) => void;
+}) {
+  return (
+    <button
+      aria-label={`Select ${color.name}`}
+      onClick={() => onSelect(color.name)}
+      className={`flex-shrink-0 w-16 h-16 rounded-full border-2 shadow-sm snap-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ${
+        active ? "border-primary p-[3px]" : "border-transparent hover:border-surface-variant"
+      }`}
+      style={{ backgroundColor: active ? "transparent" : color.hex }}
+    >
+      {active && <span className="block w-full h-full rounded-full" style={{ backgroundColor: color.hex }} />}
+    </button>
+  );
+});
+
+const PrintThumb = memo(function PrintThumb({
+  print,
+  active,
+  onSelect,
+  innerRef,
+}: {
+  print: Print;
+  active: boolean;
+  onSelect: (id: string) => void;
+  innerRef: (el: HTMLButtonElement | null) => void;
+}) {
+  return (
+    <button
+      ref={innerRef}
+      aria-label={`Select ${print.name}`}
+      onClick={() => onSelect(print.id)}
+      className={`h-20 rounded-lg border-2 bg-surface-container-low p-2 transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+        active ? "border-primary" : "border-transparent hover:border-surface-variant"
+      }`}
+    >
+      <img
+        src={print.image_url}
+        alt={print.name}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-full object-contain"
+      />
+    </button>
+  );
+});
+
 function Index() {
   const list = useServerFn(listPrints);
   const { data } = useQuery({
     queryKey: ["prints"],
     queryFn: () => list(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
   const PRINTS: Print[] = data?.prints ?? [];
 
@@ -44,22 +111,15 @@ function Index() {
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
-  const SIZES = ["P", "M", "G", "GG"];
-
-  type CartItem = {
-    id: string;
-    colorName: string;
-    printId: string;
-    printName: string;
-    size: string;
-    quantity: number;
-  };
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const totalCartItems = cart.reduce((s, i) => s + i.quantity, 0);
+  const color = COLORS[colorIdx];
+  const print = PRINTS[printIdx];
 
-  const addToCart = () => {
+  const totalCartItems = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart]);
+
+  const addToCart = useCallback(() => {
     if (!selectedSize || !print) return;
     const key = `${color.name}__${print.id}__${selectedSize}`;
     setCart((prev) => {
@@ -80,19 +140,19 @@ function Index() {
       ];
     });
     setCartOpen(true);
-  };
+  }, [color.name, print, selectedSize]);
 
-  const updateQty = (id: string, delta: number) => {
+  const updateQty = useCallback((id: string, delta: number) => {
     setCart((prev) =>
       prev
         .map((i) => (i.id === id ? { ...i, quantity: i.quantity + delta } : i))
         .filter((i) => i.quantity > 0),
     );
-  };
+  }, []);
 
-  const removeItem = (id: string) => {
+  const removeItem = useCallback((id: string) => {
     setCart((prev) => prev.filter((i) => i.id !== id));
-  };
+  }, []);
 
   useEffect(() => {
     const el = printItemRefs.current[printIdx];
@@ -107,16 +167,53 @@ function Index() {
     }
   }, [printIdx]);
 
-  const color = COLORS[colorIdx];
-  const print = PRINTS[printIdx];
-
-  const changeColor = (i: number) => {
+  const changeColor = useCallback((i: number) => {
     setFading(true);
     setTimeout(() => {
       setColorIdx((i + COLORS.length) % COLORS.length);
       setFading(false);
     }, 150);
-  };
+  }, []);
+
+  const selectColorByName = useCallback((name: string) => {
+    const i = COLORS.findIndex((c) => c.name === name);
+    if (i >= 0) changeColor(i);
+  }, [changeColor]);
+
+  const printsLen = PRINTS.length;
+  const nextPrint = useCallback(() => {
+    if (printsLen > 0) setPrintIdx((p) => (p + 1) % printsLen);
+  }, [printsLen]);
+  const prevPrint = useCallback(() => {
+    if (printsLen > 0) setPrintIdx((p) => (p - 1 + printsLen) % printsLen);
+  }, [printsLen]);
+
+  const printIdById = useMemo(() => {
+    const m = new Map<string, number>();
+    PRINTS.forEach((p, i) => m.set(p.id, i));
+    return m;
+  }, [PRINTS]);
+
+  const selectPrintById = useCallback((id: string) => {
+    const i = printIdById.get(id);
+    if (i !== undefined) setPrintIdx(i);
+  }, [printIdById]);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && printsLen > 0) {
+      if (dx < 0) nextPrint();
+      else prevPrint();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, [nextPrint, prevPrint, printsLen]);
 
   return (
     <div className="min-h-screen flex flex-col pb-20 md:pb-0">
@@ -149,25 +246,15 @@ function Index() {
         {/* Preview */}
         <section
           className="w-full md:w-3/5 relative aspect-[4/5] bg-surface-container-lowest rounded-xl overflow-hidden product-preview-shadow flex items-center justify-center touch-pan-y select-none"
-          onTouchStart={(e) => {
-            touchStartX.current = e.touches[0].clientX;
-            touchStartY.current = e.touches[0].clientY;
-          }}
-          onTouchEnd={(e) => {
-            if (touchStartX.current === null || touchStartY.current === null) return;
-            const dx = e.changedTouches[0].clientX - touchStartX.current;
-            const dy = e.changedTouches[0].clientY - touchStartY.current;
-            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && PRINTS.length > 0) {
-              if (dx < 0) setPrintIdx((printIdx + 1) % PRINTS.length);
-              else setPrintIdx((printIdx - 1 + PRINTS.length) % PRINTS.length);
-            }
-            touchStartX.current = null;
-            touchStartY.current = null;
-          }}
+          style={{ contain: "layout paint", willChange: "contents" }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
           <img
             alt={`${color.name} t-shirt`}
             src={color.img}
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover absolute inset-0 z-0 transition-opacity duration-300"
             style={{ opacity: fading ? 0 : 1 }}
           />
@@ -176,22 +263,23 @@ function Index() {
               <img
                 src={print.image_url}
                 alt={print.name}
-                className="w-1/3 opacity-90 object-contain transition-all duration-300"
+                decoding="async"
+                className="w-1/3 opacity-90 object-contain transition-transform duration-300"
                 style={{ transform: `scale(${(print.scale ?? 100) / 100})`, transformOrigin: "center" }}
               />
             )}
           </div>
-          {PRINTS.length > 1 && (
+          {printsLen > 1 && (
             <>
               <button
-                onClick={() => setPrintIdx((printIdx - 1 + PRINTS.length) % PRINTS.length)}
+                onClick={prevPrint}
                 aria-label="Estampa anterior"
                 className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm flex items-center justify-center transition active:scale-95"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
-                onClick={() => setPrintIdx((printIdx + 1) % PRINTS.length)}
+                onClick={nextPrint}
                 aria-label="Próxima estampa"
                 className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm flex items-center justify-center transition active:scale-95"
               >
@@ -218,26 +306,9 @@ function Index() {
             </div>
             <p className="text-sm text-secondary mb-3">{color.name}</p>
             <div className="carousel-container flex gap-4 overflow-x-auto pb-2 snap-x">
-              {COLORS.map((c, i) => {
-                const active = i === colorIdx;
-                return (
-                  <button
-                    key={c.name}
-                    aria-label={`Select ${c.name}`}
-                    onClick={() => changeColor(i)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-full border-2 shadow-sm snap-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ${
-                      active ? "border-primary p-[3px]" : "border-transparent hover:border-surface-variant"
-                    }`}
-                    style={{
-                      backgroundColor: active ? "transparent" : c.hex,
-                    }}
-                  >
-                    {active && (
-                      <span className="block w-full h-full rounded-full" style={{ backgroundColor: c.hex }} />
-                    )}
-                  </button>
-                );
-              })}
+              {COLORS.map((c, i) => (
+                <ColorSwatch key={c.name} color={c} active={i === colorIdx} onSelect={selectColorByName} />
+              ))}
             </div>
           </div>
 
@@ -248,10 +319,10 @@ function Index() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display text-xl font-medium">Estampa</h2>
               <div className="flex gap-2">
-                <button onClick={() => setPrintIdx((printIdx - 1 + PRINTS.length) % PRINTS.length)} aria-label="Previous print" className="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition">
+                <button onClick={prevPrint} aria-label="Previous print" className="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition">
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button onClick={() => setPrintIdx((printIdx + 1) % PRINTS.length)} aria-label="Next print" className="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition">
+                <button onClick={nextPrint} aria-label="Next print" className="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition">
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -260,26 +331,19 @@ function Index() {
             <div
               ref={printsGridRef}
               className="grid grid-cols-4 gap-3 overflow-y-auto overflow-x-hidden pb-4 pr-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
-              style={{ maxHeight: "calc(3 * 5rem + 2 * 0.75rem + 1rem)" }}
+              style={{ maxHeight: "calc(3 * 5rem + 2 * 0.75rem + 1rem)", contain: "layout paint" }}
             >
-              {PRINTS.map((p, i) => {
-                const active = i === printIdx;
-                return (
-                  <button
-                    key={p.id}
-                    ref={(el) => {
-                      printItemRefs.current[i] = el;
-                    }}
-                    aria-label={`Select ${p.name}`}
-                    onClick={() => setPrintIdx(i)}
-                    className={`h-20 rounded-lg border-2 bg-surface-container-low p-2 transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                      active ? "border-primary" : "border-transparent hover:border-surface-variant"
-                    }`}
-                  >
-                    <img src={p.image_url} alt={p.name} className="w-full h-full object-contain" />
-                  </button>
-                );
-              })}
+              {PRINTS.map((p, i) => (
+                <PrintThumb
+                  key={p.id}
+                  print={p}
+                  active={i === printIdx}
+                  onSelect={selectPrintById}
+                  innerRef={(el) => {
+                    printItemRefs.current[i] = el;
+                  }}
+                />
+              ))}
             </div>
           </div>
 
