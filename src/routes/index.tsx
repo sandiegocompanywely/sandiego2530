@@ -327,20 +327,47 @@ function Index() {
             <p className="text-sm text-secondary mb-3">{print?.name ?? "—"}</p>
             <div
               ref={printsGridRef}
-              className="grid grid-cols-4 gap-3 overflow-y-auto overflow-x-hidden pb-4 pr-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
-              style={{ maxHeight: "calc(3 * 5rem + 2 * 0.75rem + 1rem)", contain: "layout paint" }}
+              className="overflow-y-auto overflow-x-hidden pb-4 pr-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
+              style={{ height: "calc(3 * 5rem + 2 * 0.75rem + 1rem)", contain: "strict" }}
             >
-              {PRINTS.map((p, i) => (
-                <PrintThumb
-                  key={p.id}
-                  print={p}
-                  active={i === printIdx}
-                  onSelect={selectPrintById}
-                  innerRef={(el) => {
-                    printItemRefs.current[i] = el;
-                  }}
-                />
-              ))}
+              <div
+                style={{
+                  height: `${rowVirtualizer.getTotalSize()}px`,
+                  width: "100%",
+                  position: "relative",
+                }}
+              >
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const startIdx = virtualRow.index * COLS;
+                  const rowItems = PRINTS.slice(startIdx, startIdx + COLS);
+                  return (
+                    <div
+                      key={virtualRow.key}
+                      className="grid grid-cols-4 gap-3"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${ROW_HEIGHT}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      {rowItems.map((p, j) => {
+                        const i = startIdx + j;
+                        return (
+                          <PrintThumb
+                            key={p.id}
+                            print={p}
+                            active={i === printIdx}
+                            onSelect={selectPrintById}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
