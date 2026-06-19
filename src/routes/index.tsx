@@ -100,6 +100,16 @@ function Index() {
   });
   const PRINTS: Print[] = data?.prints ?? [];
 
+  const COLS = 4;
+  const ROW_HEIGHT = 92; // 80px thumb + 12px gap
+  const rowCount = Math.ceil(PRINTS.length / COLS);
+  const rowVirtualizer = useVirtualizer({
+    count: rowCount,
+    getScrollElement: () => printsGridRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 2,
+  });
+
   const [colorIdx, setColorIdx] = useState(0);
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
