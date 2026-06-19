@@ -66,16 +66,13 @@ const PrintThumb = memo(function PrintThumb({
   print,
   active,
   onSelect,
-  innerRef,
 }: {
   print: Print;
   active: boolean;
   onSelect: (id: string) => void;
-  innerRef: (el: HTMLButtonElement | null) => void;
 }) {
   return (
     <button
-      ref={innerRef}
       aria-label={`Select ${print.name}`}
       onClick={() => onSelect(print.id)}
       className={`h-20 rounded-lg border-2 bg-surface-container-low p-2 transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
