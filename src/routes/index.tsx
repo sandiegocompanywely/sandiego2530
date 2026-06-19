@@ -238,6 +238,14 @@ function Index() {
       {/* Top app bar */}
       <header className="sticky top-0 z-40 w-full bg-background">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full max-w-[1280px] mx-auto h-20 px-6">
+          <img
+            src={sandiegoLogo.url}
+            alt="San Diego"
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain"
+          />
+          <h1 className="font-display text-xl md:text-3xl font-medium tracking-tight text-on-surface text-center">
+            Escolha sua estampa!
+          </h1>
           <button
             onClick={() => setCartOpen((o) => !o)}
             aria-label="Shopping Bag"
@@ -250,14 +258,6 @@ function Index() {
               </span>
             )}
           </button>
-          <h1 className="font-display text-xl md:text-3xl font-medium tracking-tight text-on-surface text-center">
-            Escolha sua estampa!
-          </h1>
-          <img
-            src={sandiegoLogo.url}
-            alt="San Diego"
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain"
-          />
         </div>
       </header>
 
