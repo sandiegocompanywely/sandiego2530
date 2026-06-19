@@ -105,7 +105,6 @@ function Index() {
   const [fading, setFading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const printsGridRef = useRef<HTMLDivElement>(null);
-  const printItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
