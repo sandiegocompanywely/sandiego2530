@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
 import { X, ShoppingBag, ChevronLeft, ChevronRight, ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
+import sandiegoLogo from "@/assets/sandiego-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -236,10 +237,7 @@ function Index() {
     <div className="min-h-screen flex flex-col pb-20 md:pb-0">
       {/* Top app bar */}
       <header className="sticky top-0 z-40 w-full bg-background">
-        <div className="flex justify-between items-center w-full max-w-[1280px] mx-auto h-20 px-6">
-          <h1 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-on-surface">
-            Escolha sua estampa! San Diego Company
-          </h1>
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full max-w-[1280px] mx-auto h-20 px-6">
           <button
             onClick={() => setCartOpen((o) => !o)}
             aria-label="Shopping Bag"
@@ -252,6 +250,14 @@ function Index() {
               </span>
             )}
           </button>
+          <h1 className="font-display text-xl md:text-3xl font-medium tracking-tight text-on-surface text-center">
+            Escolha sua estampa!
+          </h1>
+          <img
+            src={sandiegoLogo.url}
+            alt="San Diego"
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain"
+          />
         </div>
       </header>
 
