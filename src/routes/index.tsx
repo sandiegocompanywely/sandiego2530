@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef, useCallback, useMemo, memo } from "react";
+import { useState, useRef, useCallback, useMemo, memo, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -118,8 +118,28 @@ function Index() {
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const CART_STORAGE_KEY = "sdc_cart_v1";
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed as CartItem[]) : [];
+    } catch {
+      return [];
+    }
+  });
   const [cartOpen, setCartOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch {
+      // ignore quota / private mode errors
+    }
+  }, [cart]);
 
   const color = COLORS[colorIdx];
   const print = PRINTS[printIdx];
@@ -498,6 +518,13 @@ function Index() {
                   `https://wa.me/5547997408889/?text=${encodeURIComponent(message)}`,
                   "_blank",
                 );
+                setCart([]);
+                try {
+                  window.localStorage.removeItem(CART_STORAGE_KEY);
+                } catch {
+                  // ignore
+                }
+                setCartOpen(false);
               }}
               className="w-full py-3 px-6 rounded-full bg-green-600 text-white text-sm font-semibold tracking-wider uppercase hover:bg-green-700 transition active:scale-95 shadow-sm hover:shadow-md"
             >
