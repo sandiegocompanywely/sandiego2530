@@ -518,6 +518,13 @@ function Index() {
                   `https://wa.me/5547997408889/?text=${encodeURIComponent(message)}`,
                   "_blank",
                 );
+                setCart([]);
+                try {
+                  window.localStorage.removeItem(CART_STORAGE_KEY);
+                } catch {
+                  // ignore
+                }
+                setCartOpen(false);
               }}
               className="w-full py-3 px-6 rounded-full bg-green-600 text-white text-sm font-semibold tracking-wider uppercase hover:bg-green-700 transition active:scale-95 shadow-sm hover:shadow-md"
             >
