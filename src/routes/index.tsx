@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useCallback, useMemo, memo } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listPrints } from "@/lib/prints.functions";
@@ -65,16 +66,13 @@ const PrintThumb = memo(function PrintThumb({
   print,
   active,
   onSelect,
-  innerRef,
 }: {
   print: Print;
   active: boolean;
   onSelect: (id: string) => void;
-  innerRef: (el: HTMLButtonElement | null) => void;
 }) {
   return (
     <button
-      ref={innerRef}
       aria-label={`Select ${print.name}`}
       onClick={() => onSelect(print.id)}
       className={`h-20 rounded-lg border-2 bg-surface-container-low p-2 transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
@@ -102,12 +100,21 @@ function Index() {
   });
   const PRINTS: Print[] = data?.prints ?? [];
 
+  const COLS = 4;
+  const ROW_HEIGHT = 92; // 80px thumb + 12px gap
+  const rowCount = Math.ceil(PRINTS.length / COLS);
+  const rowVirtualizer = useVirtualizer({
+    count: rowCount,
+    getScrollElement: () => printsGridRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 2,
+  });
+
   const [colorIdx, setColorIdx] = useState(0);
   const [printIdx, setPrintIdx] = useState(0);
   const [fading, setFading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const printsGridRef = useRef<HTMLDivElement>(null);
-  const printItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
@@ -320,20 +327,47 @@ function Index() {
             <p className="text-sm text-secondary mb-3">{print?.name ?? "—"}</p>
             <div
               ref={printsGridRef}
-              className="grid grid-cols-4 gap-3 overflow-y-auto overflow-x-hidden pb-4 pr-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
-              style={{ maxHeight: "calc(3 * 5rem + 2 * 0.75rem + 1rem)", contain: "layout paint" }}
+              className="overflow-y-auto overflow-x-hidden pb-4 pr-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
+              style={{ height: "calc(3 * 5rem + 2 * 0.75rem + 1rem)", contain: "strict" }}
             >
-              {PRINTS.map((p, i) => (
-                <PrintThumb
-                  key={p.id}
-                  print={p}
-                  active={i === printIdx}
-                  onSelect={selectPrintById}
-                  innerRef={(el) => {
-                    printItemRefs.current[i] = el;
-                  }}
-                />
-              ))}
+              <div
+                style={{
+                  height: `${rowVirtualizer.getTotalSize()}px`,
+                  width: "100%",
+                  position: "relative",
+                }}
+              >
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const startIdx = virtualRow.index * COLS;
+                  const rowItems = PRINTS.slice(startIdx, startIdx + COLS);
+                  return (
+                    <div
+                      key={virtualRow.key}
+                      className="grid grid-cols-4 gap-3"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${ROW_HEIGHT}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      {rowItems.map((p, j) => {
+                        const i = startIdx + j;
+                        return (
+                          <PrintThumb
+                            key={p.id}
+                            print={p}
+                            active={i === printIdx}
+                            onSelect={selectPrintById}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
