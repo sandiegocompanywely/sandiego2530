@@ -237,9 +237,6 @@ function Index() {
       {/* Top app bar */}
       <header className="sticky top-0 z-40 w-full bg-background">
         <div className="flex justify-between items-center w-full max-w-[1280px] mx-auto h-20 px-6">
-          <button aria-label="Close" className="hidden md:flex w-10 h-10 items-center justify-center text-secondary hover:text-primary transition active:scale-95">
-            <X className="w-6 h-6" />
-          </button>
           <h1 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-on-surface">
             Escolha sua estampa! San Diego Company
           </h1>
