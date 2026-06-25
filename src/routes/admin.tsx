@@ -32,6 +32,9 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+const SHIRT_COLORS = ["White", "Black", "Brown", "Off-White"] as const;
+type ShirtColor = (typeof SHIRT_COLORS)[number];
+
 function AdminPage() {
   const list = useServerFn(listPrints);
   const create = useServerFn(createPrint);
@@ -43,6 +46,7 @@ function AdminPage() {
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [scale, setScale] = useState(100);
+  const [compatibleColors, setCompatibleColors] = useState<ShirtColor[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
@@ -60,20 +64,32 @@ function AdminPage() {
     setName("");
     setFile(null);
     setScale(100);
+    setCompatibleColors([]);
     setEditingId(null);
     setEditingName("");
     const el = document.getElementById("file-input") as HTMLInputElement | null;
     if (el) el.value = "";
   };
 
-  const startEdit = (p: { id: string; name: string; scale: number }) => {
+  const startEdit = (p: { id: string; name: string; scale: number; compatible_colors?: string[] | null }) => {
     setEditingId(p.id);
     setEditingName(p.name);
     setName(p.name);
     setScale(p.scale ?? 100);
+    setCompatibleColors(
+      (p.compatible_colors ?? []).filter((c): c is ShirtColor =>
+        (SHIRT_COLORS as readonly string[]).includes(c),
+      ),
+    );
     setFile(null);
     setError(null);
     setSuccess(null);
+  };
+
+  const toggleColor = (c: ShirtColor) => {
+    setCompatibleColors((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+    );
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -94,10 +110,11 @@ function AdminPage() {
           id: string;
           name: string;
           scale: number;
+          compatibleColors: ShirtColor[];
           fileName?: string;
           fileBase64?: string;
           contentType?: string;
-        } = { password, id: editingId, name, scale };
+        } = { password, id: editingId, name, scale, compatibleColors };
         if (file) {
           payload.fileBase64 = await fileToBase64(file);
           payload.fileName = file.name;
@@ -120,6 +137,7 @@ function AdminPage() {
             fileBase64,
             contentType: file.type || "image/png",
             scale,
+            compatibleColors,
           },
         });
         setSuccess(`Estampa "${name}" adicionada!`);
@@ -221,6 +239,35 @@ function AdminPage() {
                 onChange={(e) => setScale(Number(e.target.value))}
                 className="w-full accent-primary"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Cores de camiseta compatíveis
+              </label>
+              <p className="text-xs text-secondary mb-2">
+                Marque as cores em que esta estampa pode ser aplicada. Se nenhuma for marcada, a estampa será tratada como <strong>Universal</strong> e aparecerá em todas as cores.
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {SHIRT_COLORS.map((c) => {
+                  const checked = compatibleColors.includes(c);
+                  return (
+                    <label
+                      key={c}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-sm transition ${
+                        checked ? "border-primary bg-primary/10" : "border-surface-variant bg-surface-container-low hover:border-primary/50"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleColor(c)}
+                        className="accent-primary"
+                      />
+                      {c}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
 
             {error && (

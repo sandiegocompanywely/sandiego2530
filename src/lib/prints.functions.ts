@@ -5,11 +5,13 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const listPrints = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabaseAdmin
     .from("prints")
-    .select("id, name, image_url, scale")
+    .select("id, name, image_url, scale, compatible_colors")
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
   return { prints: data ?? [] };
 });
+
+const COMPATIBLE_COLORS = ["White", "Black", "Brown", "Off-White"] as const;
 
 const createSchema = z.object({
   password: z.string().min(1),
@@ -18,6 +20,7 @@ const createSchema = z.object({
   fileBase64: z.string().min(1),
   contentType: z.string().min(1).max(100),
   scale: z.number().int().min(50).max(120).default(100),
+  compatibleColors: z.array(z.enum(COMPATIBLE_COLORS)).default([]),
 });
 
 export const createPrint = createServerFn({ method: "POST" })
@@ -50,8 +53,9 @@ export const createPrint = createServerFn({ method: "POST" })
         image_url: pub.publicUrl,
         storage_path: storagePath,
         scale: data.scale,
+        compatible_colors: data.compatibleColors,
       })
-      .select("id, name, image_url, scale")
+      .select("id, name, image_url, scale, compatible_colors")
       .single();
     if (insertError) throw new Error(insertError.message);
 
@@ -66,6 +70,7 @@ const updateSchema = z.object({
   fileName: z.string().min(1).max(255).optional(),
   fileBase64: z.string().min(1).optional(),
   contentType: z.string().min(1).max(100).optional(),
+  compatibleColors: z.array(z.enum(COMPATIBLE_COLORS)).default([]),
 });
 
 export const updatePrint = createServerFn({ method: "POST" })
@@ -80,7 +85,8 @@ export const updatePrint = createServerFn({ method: "POST" })
       scale: number;
       image_url?: string;
       storage_path?: string;
-    } = { name: data.name, scale: data.scale };
+      compatible_colors: string[];
+    } = { name: data.name, scale: data.scale, compatible_colors: data.compatibleColors };
 
     if (data.fileBase64 && data.fileName && data.contentType) {
       const { data: existing } = await supabaseAdmin
@@ -119,7 +125,7 @@ export const updatePrint = createServerFn({ method: "POST" })
       .from("prints")
       .update(updates)
       .eq("id", data.id)
-      .select("id, name, image_url, scale")
+      .select("id, name, image_url, scale, compatible_colors")
       .single();
     if (error) throw new Error(error.message);
     return { print: row };

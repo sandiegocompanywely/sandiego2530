@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Color = { name: string; hex: string; img: string };
-type Print = { id: string; name: string; image_url: string; scale?: number | null };
+type Print = { id: string; name: string; image_url: string; scale?: number | null; compatible_colors?: string[] | null };
 
 const COLORS: Color[] = [
   { name: "White", hex: "#ffffff", img: "https://gxquualboudegzptrfqs.supabase.co/storage/v1/object/public/prints/shirts/white.jpg" },
@@ -99,7 +99,30 @@ function Index() {
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
-  const PRINTS: Print[] = data?.prints ?? [];
+  const ALL_PRINTS: Print[] = data?.prints ?? [];
+
+  const [colorIdx, setColorIdx] = useState(0);
+  const [printIdx, setPrintIdx] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const printsGridRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const currentColorName = COLORS[colorIdx]?.name;
+  const PRINTS = useMemo<Print[]>(() => {
+    return ALL_PRINTS.filter((p) => {
+      const cc = p.compatible_colors;
+      if (!cc || cc.length === 0) return true; // Universal
+      return currentColorName ? cc.includes(currentColorName) : true;
+    });
+  }, [ALL_PRINTS, currentColorName]);
+
+  // Reset selected print when the filtered list changes (e.g., color change)
+  useEffect(() => {
+    setPrintIdx(0);
+    if (printsGridRef.current) printsGridRef.current.scrollTop = 0;
+  }, [currentColorName]);
 
   const COLS = 4;
   const ROW_HEIGHT = 92; // 80px thumb + 12px gap
@@ -110,14 +133,6 @@ function Index() {
     estimateSize: () => ROW_HEIGHT,
     overscan: 2,
   });
-
-  const [colorIdx, setColorIdx] = useState(0);
-  const [printIdx, setPrintIdx] = useState(0);
-  const [fading, setFading] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const printsGridRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
 
   const CART_STORAGE_KEY = "sdc_cart_v1";
   const [cart, setCart] = useState<CartItem[]>(() => {
