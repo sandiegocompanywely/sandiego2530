@@ -110,10 +110,11 @@ function AdminPage() {
           id: string;
           name: string;
           scale: number;
+          compatibleColors: ShirtColor[];
           fileName?: string;
           fileBase64?: string;
           contentType?: string;
-        } = { password, id: editingId, name, scale };
+        } = { password, id: editingId, name, scale, compatibleColors };
         if (file) {
           payload.fileBase64 = await fileToBase64(file);
           payload.fileName = file.name;
@@ -136,6 +137,7 @@ function AdminPage() {
             fileBase64,
             contentType: file.type || "image/png",
             scale,
+            compatibleColors,
           },
         });
         setSuccess(`Estampa "${name}" adicionada!`);
