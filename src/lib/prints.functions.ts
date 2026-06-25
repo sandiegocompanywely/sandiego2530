@@ -11,6 +11,8 @@ export const listPrints = createServerFn({ method: "GET" }).handler(async () => 
   return { prints: data ?? [] };
 });
 
+const COMPATIBLE_COLORS = ["White", "Black", "Brown", "Off-White"] as const;
+
 const createSchema = z.object({
   password: z.string().min(1),
   name: z.string().min(1).max(255),
@@ -18,6 +20,7 @@ const createSchema = z.object({
   fileBase64: z.string().min(1),
   contentType: z.string().min(1).max(100),
   scale: z.number().int().min(50).max(120).default(100),
+  compatibleColors: z.array(z.enum(COMPATIBLE_COLORS)).default([]),
 });
 
 export const createPrint = createServerFn({ method: "POST" })
