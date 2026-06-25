@@ -70,6 +70,7 @@ const updateSchema = z.object({
   fileName: z.string().min(1).max(255).optional(),
   fileBase64: z.string().min(1).optional(),
   contentType: z.string().min(1).max(100).optional(),
+  compatibleColors: z.array(z.enum(COMPATIBLE_COLORS)).default([]),
 });
 
 export const updatePrint = createServerFn({ method: "POST" })
