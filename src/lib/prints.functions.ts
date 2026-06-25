@@ -85,7 +85,8 @@ export const updatePrint = createServerFn({ method: "POST" })
       scale: number;
       image_url?: string;
       storage_path?: string;
-    } = { name: data.name, scale: data.scale };
+      compatible_colors: string[];
+    } = { name: data.name, scale: data.scale, compatible_colors: data.compatibleColors };
 
     if (data.fileBase64 && data.fileName && data.contentType) {
       const { data: existing } = await supabaseAdmin
