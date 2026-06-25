@@ -32,6 +32,9 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+const SHIRT_COLORS = ["White", "Black", "Brown", "Off-White"] as const;
+type ShirtColor = (typeof SHIRT_COLORS)[number];
+
 function AdminPage() {
   const list = useServerFn(listPrints);
   const create = useServerFn(createPrint);
