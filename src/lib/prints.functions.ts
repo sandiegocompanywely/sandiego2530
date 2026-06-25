@@ -125,7 +125,7 @@ export const updatePrint = createServerFn({ method: "POST" })
       .from("prints")
       .update(updates)
       .eq("id", data.id)
-      .select("id, name, image_url, scale")
+      .select("id, name, image_url, scale, compatible_colors")
       .single();
     if (error) throw new Error(error.message);
     return { print: row };
