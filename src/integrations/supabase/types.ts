@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       prints: {
         Row: {
+          compatible_colors: string[]
           created_at: string
           id: string
           image_url: string
@@ -24,6 +25,7 @@ export type Database = {
           storage_path: string | null
         }
         Insert: {
+          compatible_colors?: string[]
           created_at?: string
           id?: string
           image_url: string
@@ -32,6 +34,7 @@ export type Database = {
           storage_path?: string | null
         }
         Update: {
+          compatible_colors?: string[]
           created_at?: string
           id?: string
           image_url?: string

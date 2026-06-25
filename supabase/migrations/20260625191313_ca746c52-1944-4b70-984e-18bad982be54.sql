@@ -1,0 +1,1 @@
+ALTER TABLE public.prints ADD COLUMN IF NOT EXISTS compatible_colors text[] NOT NULL DEFAULT '{}'::text[];
