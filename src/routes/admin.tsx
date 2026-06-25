@@ -240,6 +240,35 @@ function AdminPage() {
                 className="w-full accent-primary"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Cores de camiseta compatíveis
+              </label>
+              <p className="text-xs text-secondary mb-2">
+                Marque as cores em que esta estampa pode ser aplicada. Se nenhuma for marcada, a estampa será tratada como <strong>Universal</strong> e aparecerá em todas as cores.
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {SHIRT_COLORS.map((c) => {
+                  const checked = compatibleColors.includes(c);
+                  return (
+                    <label
+                      key={c}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-sm transition ${
+                        checked ? "border-primary bg-primary/10" : "border-surface-variant bg-surface-container-low hover:border-primary/50"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleColor(c)}
+                        className="accent-primary"
+                      />
+                      {c}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
 
             {error && (
               <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
