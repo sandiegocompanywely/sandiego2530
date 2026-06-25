@@ -46,6 +46,7 @@ function AdminPage() {
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [scale, setScale] = useState(100);
+  const [compatibleColors, setCompatibleColors] = useState<ShirtColor[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
