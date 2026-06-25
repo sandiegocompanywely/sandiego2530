@@ -5,7 +5,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const listPrints = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabaseAdmin
     .from("prints")
-    .select("id, name, image_url, scale")
+    .select("id, name, image_url, scale, compatible_colors")
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
   return { prints: data ?? [] };
