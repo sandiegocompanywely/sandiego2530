@@ -53,8 +53,9 @@ export const createPrint = createServerFn({ method: "POST" })
         image_url: pub.publicUrl,
         storage_path: storagePath,
         scale: data.scale,
+        compatible_colors: data.compatibleColors,
       })
-      .select("id, name, image_url, scale")
+      .select("id, name, image_url, scale, compatible_colors")
       .single();
     if (insertError) throw new Error(insertError.message);
 
