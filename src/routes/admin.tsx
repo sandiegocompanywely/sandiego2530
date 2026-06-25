@@ -64,20 +64,32 @@ function AdminPage() {
     setName("");
     setFile(null);
     setScale(100);
+    setCompatibleColors([]);
     setEditingId(null);
     setEditingName("");
     const el = document.getElementById("file-input") as HTMLInputElement | null;
     if (el) el.value = "";
   };
 
-  const startEdit = (p: { id: string; name: string; scale: number }) => {
+  const startEdit = (p: { id: string; name: string; scale: number; compatible_colors?: string[] | null }) => {
     setEditingId(p.id);
     setEditingName(p.name);
     setName(p.name);
     setScale(p.scale ?? 100);
+    setCompatibleColors(
+      (p.compatible_colors ?? []).filter((c): c is ShirtColor =>
+        (SHIRT_COLORS as readonly string[]).includes(c),
+      ),
+    );
     setFile(null);
     setError(null);
     setSuccess(null);
+  };
+
+  const toggleColor = (c: ShirtColor) => {
+    setCompatibleColors((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+    );
   };
 
   const handleSubmit = async (e: FormEvent) => {
